@@ -1,0 +1,309 @@
+{% load staticfiles %}
+{% include 'navbar.html' %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- <meta HTTP-EQUIV="refresh" CONTENT="5"> -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="icon" href="../../favicon.ico"> -->
+
+    <title>TMIS</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.structure.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.theme.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'js/datetimepicker-master/jquery.datetimepicker.css' %}">
+
+
+  </head>
+
+  <body>
+  <div class="maincontainer">
+    <div class="container">
+      {% if messages %}<!--message 000aaa-->
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+      {% endif %}<!--End message 000aaa-->
+      
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron">
+            <div class="row">
+
+                  {% if request.user.is_authenticated %}<!--If authenticated -->
+                      <div class="row retirement-table">
+<!--000999-->
+                        <div class="inline-search">
+                            <div class="taskmis">
+                              <form method='POST' action=''>{% csrf_token %}
+                                <div class="custom-title">{{heading}}</div><br/><br/>
+                                  {{form|crispy}}
+                                    <div class='submit'><input class='btn btn-success'  type='submit' value='Search'/></div>
+                              </form>
+                          </div>
+                        </div>
+
+
+                        <br><br>
+
+                        {% if perms.tmis.add_task %}<!--000666-->
+                              {% if perms.tmis.add_assignment %}
+                              <div class="">
+                                <div class="leftcenter">
+                                  <a href='/tmis/user_task_entry/'><div class='btn btn-danger' size="4"><font color = 'white'>New Task</font></div></a>
+                                </div>
+                              </div>
+                              {% endif %}
+                              
+                              <div class="left-button-retirement">
+                                <div class="leftcenter">
+                                  <a href='/tmis/user_task_completed_list'><div class='btn btn-success' size="4"><font color = 'white'>View Your Completed Task</font></div></a>
+                                </div>
+                              </div>
+
+                              {% if perms.tmis.add_task %}
+                              <a href="/tmis/task_ext_list/">
+                              <div class="col-sm-3 aligncenter voucher-thumbnail-display thumbnail">
+                                <span style="color: #5cb85c; text-align: center;">
+                                  <strong>
+                                   You have 
+                                   <span class="blink-me" style="color: #e61c66; font-size: 20px;">
+                                      {{my_task_ext_count}}
+                                   </span> extension request(s)
+                                  </strong>
+                                </span>
+                              </div>
+                              </a>
+                              {% endif %}
+                              {% if perms.tmis.add_task %}
+                              <a href="/tmis/task_rev_list/">
+                              <div class="col-sm-4 aligncenter voucher-thumbnail-display thumbnail">
+                                <span style="color: #5cb85c; text-align: center;">
+                                  <strong>
+                                   <span class="blink-me" style="color: #e61c66; font-size: 20px;">
+                                      {{my_task_rev_count}}
+                                   </span> review(s) pending.
+                                      {% if my_task_rev_urgent.review_due_date %}
+                                      Some due in
+                                      <span style="color: #e61c66; text-align: center;">
+                                        {{ my_task_rev_urgent.review_due_date|timeuntil:today }}
+                                      </span>
+                                      {% endif %}
+                                  </strong>
+                                </span>
+                              </div>
+                              </a>
+                              {% endif %}
+                          
+                          {% endif %}<!-- End 000666-->
+
+                      </div>
+                          {% if message %}}<!--000555-->
+                          <div class="voucher-list-message aligncenter mybold highlight center">{{ message }}</div><br><br>
+                          {% endif %}<!-- End 000555-->
+
+                          <font color="#2e6da4" align="center">
+                          <div class="row">
+                              <!-- <div class="col-12"> -->
+                                  {% if my_task %}<!--if my_task tasks_list 000111 This will check if you have a pending task assigned in your name-->
+                                  {% for instance in my_task %}<!--for loop of tasks_list 000777-->
+                                        <a href="{{ instance.get_absolute_url_progress }}">
+                                          <div class="col-sm-3 voucher-thumbnail-display thumbnail">
+                                            <div class="voucher-thumbnail-top">
+                                              <br><span style="color: #fff">{{instance.task_name}}</span><br><br>
+                                            </div> <!--Thumbname col-->
+                                            <div class="voucher-thumbnail-bottom">
+                                              Assigned To: <span style="color: #fff">{{instance.assigned_to.all}}</span><br>
+                                            </div> <!--Thumbname col-->
+                                            <div class="voucher-thumbnail-bottom">
+                                              Assigned By: <span style="color: #fff">{{instance.assigned_by}}</span><br>
+                                            </div> <!--Thumbname col-->
+
+                                            <div class="row voucher-thumbnail-bottom time_spent">
+                                              <!-- Due In:<br><span class="blink-me" style="color: #e61c66; font-size: 16px" >{{instance.due_date}} : {{ instance.due_date|timeuntil:today }}</span><br> -->
+                                              Due In:<br><span class="blink-me" style="color: #e61c66; font-size: 16px" >{{ instance.due_date|timeuntil:today }}
+                                                <br> 
+                                              </span>
+                                              
+                                              {% if instance.ext %}
+                                                <span style="color: #fff;">
+                                                  Ext Requested on : {{instance.date_ext}}
+                                                </span>
+                                              {% endif %}
+                                              
+                                              {% if instance.disaprv_ext %}
+                                                : <span style="color: #e61c66";> Disapproved</span>
+                                              {% endif %}
+                                                
+                                              {% if instance.due_date >= instance.original_due_date %}
+                                                <span style="color: #fff;">Overdue: {{ instance.original_due_date|timesince }}</span>
+                                              {% endif %}
+
+                                              {% if instance.sub_rev %}
+                                              <br>
+                                                <span style="color: #fff;">Sent for Review : {{ instance.date_sub_rev|date:"D, d M, Y" }}</span>
+                                              {% endif %}
+                                              <br>
+
+                                              <div class="col-sm-12">
+                                                  <div class="col-sm-6">
+                                                    <span style="color: #e61c66; font-size: 14px" >
+                                                    budgeted: <br>
+                                                  {{ instance.start_date|timesince:instance.due_date }}</span><br>
+                                                  </div>
+                                                  <div class="col-sm-6">
+                                                    <span style="color: #e61c66; font-size: 14px" >
+                                                    Actual: <br>
+                                                    {% if instance.completed %}
+                                                      {{ instance.date_completed|timeuntil:instance.start_date }}</span><br>
+                                                    {% else %}
+                                                      {{ today|timeuntil:instance.start_date }}</span><br>
+                                                    {% endif %}
+                                                  </div>
+                                              </div>
+                                              
+                                            </div> <!--Thumbname col-->
+
+                                          </div>
+                                        </a>
+                                  {% endfor %}<!--End for loop of tasks_list 000777-->
+                                  {% else %}<!--Else of ifequal for tasks_list 000111-->
+                                          <div class="col-sm-4"></div>
+
+                                          <div class="col-sm-4 voucher-thumbnail-display thumbnail">
+                                            <span style="color: #e61c66"><strong>You have no pending task</strong></span>
+                                          </div>
+
+                                          <div class="col-sm-4"></div>
+
+                                  {% endif %}<!--End of my_task for tasks_list 000111-->
+                                  </font>
+                              <!-- </div> -->
+                          </div>
+
+
+<!-- Test your assigned to other users -->
+                          <div class="row"><!-- Test your assigned to other users -->
+                                <font color="#2e6da4" align="center">
+                                      <hr>
+                                      <div class="custom-title">LIST OF TASK YOU HAVE ASSIGNED</></div><br>
+                                      
+                                      <div class="left-button-retirement">
+                                          <div class="leftcenter">
+                                            <a href='/tmis/assigned_task_completed_list'><div class='btn btn-success' size="4"><font color = 'white'>View Your Assigned Completed Task</font></div></a>
+                                          </div>
+                                      </div>
+                                      <br>
+                                {% if my_task_iassigned %}
+
+                                      <table class='table'>
+                                          <thead>
+                                              <tr>
+                                                  <th class='aligncenter'>#</th>
+                                                  <th class='aligncenter'>ASSINGMENT</th>
+                                                  <th class='aligncenter'>TASK</th>
+                                                  <!-- <th class='aligncenter'>AUDIT PHASE</th> -->
+                                                  <th class='aligncenter'>ASSIGNED TO</th>
+                                                  <!-- <th class='aligncenter'>ASSIGNED BY</th> -->
+                                                  <th class='aligncenter'>START DATE</th>
+                                                  <th class='aligncenter'>DUE DATE</th>
+                                                  <th class='aligncenter'>DOWNLOAD</th>
+                                                  <!-- <th class='aligncenter'>DATE SENT</th> -->
+                                              </tr>
+                                          </thead>
+                                          {% for instance in my_task_iassigned %}<!--for loop of tasks_list 000777-->
+                                              <tr class="spaceUnder">
+                                                  <td class='aligncenter'>{{forloop.counter}}</td>
+                                                  <td class='aligncenter'>
+                                                    <!-- <ul class="nav navbar-nav"> -->
+                                                      <li class="dropdown">
+                    
+                                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{instance.assignment}}<span class="caret"></span>
+                                                        </a>
+                                                        <ul class="dropdown-menu">
+                                                          <li><a href='{{ instance.get_absolute_url_review }}'>Mark as Reviewed</a></li>
+                                                          <li><a href='{{ instance.get_absolute_url_comment }}'>View / Add Comments</a></li>
+                                                          <!-- <li><a href='{{ instance.get_absolute_url_review }}'><span class={{highlight}}>Mark as reviewed</span></a></li> -->
+                                                          <li><a href='{{ instance.get_absolute_url_extension }}'>Extend Time</a></li>        
+                                                          <li><a href='{{ instance.get_absolute_url_comment }}'>Mark as completed</a></li>        
+                                                          <li><a href='{{ instance.get_absolute_url }}'>Edit Task</a></li>        
+                                                          <li><a href='{{ instance.get_absolute_url_progress }}'>Send for Action</a></li>        
+                                                        </ul>
+
+                                                        </a></li>
+                                                      
+                                                      </li>
+                                                    <!-- </ul> -->
+                                                  </td>
+                                                  <td class='aligncenter'>{{instance.task_name}}</td>
+                                                  <!-- <td class='aligncenter'>{{instance.audit_phase}}</td> -->
+                                                  <td class='aligncenter'>{{instance.assigned_to.all}}</td>
+                                                  <!-- <td class='aligncenter'>{{instance.assigned_by}}</a></td> -->
+                                                  <td class='aligncenter'>{{instance.start_date}}</td>
+                                                  <td class='aligncenter'>{{instance.due_date}} : Due in {{ instance.due_date|timeuntil:today }}</td>
+                                                  {% if instance.working_paper %}
+                                                  <td class='aligncenter'><a href="{{instance.working_paper.url}}" class="btn btn-danger btn-sm" target="_blank">Download Working Paper</a></td>
+                                                  {% else %}<td class='aligncenter'>No working paper attached</td>
+                                                  {% endif %}
+                                              </tr><!-- <br> -->
+                                          {% endfor %}<!--End for loop of tasks_list 000777-->
+
+              
+
+
+                                {% endif %}<!--End of my_task for tasks_list 000111-->
+                                </font>
+                            </div><!-- END Test your assigned to other users -->
+
+                      {% else %}You have to login before you can access this page. Click <a href="/accounts/login">here</a> to Sign in
+                  {% endif %}<!-- End If authenticated -->
+            </div> <!-- End row-->
+      </div> <!--jumbotron end-->
+
+
+    </div> <!-- /container -->
+  <!-- </div> -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- <script src="../../dist/js/bootstrap.min.js"></script> -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+
+    <script src="{% static 'js/jquery-1.12.3.js' %}"></script>
+    <script src="{% static 'js/jqueryui/jquery-ui.js' %}"></script>
+    <script src="{% static 'js/pager/paging.js' %}"></script>
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+
+    <!-- ichecker and Nprogress Bar -->
+    <link href="{% static 'js/icheck/skins/square/blue.css' %}" rel="stylesheet">
+    <link href="{% static 'js/nprogress/nprogress.css' %}" rel="stylesheet">
+    <script src="{% static 'js/icheck/icheck.min.js' %}"></script>
+    <script src="{% static 'js/nprogress/nprogress.js' %}"></script>
+    <script src="{% static 'js/datetimepicker-master/build/jquery.datetimepicker.full.min.js' %}"></script>
+
+<!--   </div> End container -->
+  </div>
+  </body>
+</html>

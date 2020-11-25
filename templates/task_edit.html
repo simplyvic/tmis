@@ -1,0 +1,283 @@
+{% load staticfiles %}
+{% include 'navbar.html' %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="icon" href="../../favicon.ico"> -->
+
+    <title>TMIS</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.structure.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.theme.css' %}" rel="stylesheet">
+    <link href="{% static 'js/icheck/skins/square/blue.css' %}" rel="stylesheet">
+    <link href="{% static 'js/nprogress/nprogress.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'js/datetimepicker-master/jquery.datetimepicker.css' %}">
+
+
+    <!-- <link href="your-path/square/color-scheme.css" rel="stylesheet"> -->
+
+
+  </head>
+
+  <body>
+  <div class="maincontainer">
+    <div class="container">
+
+      <!-- Main component for a primary marketing message or call to action -->
+     <div id="nanobar"></div>
+      <div class="jumbotron">
+          {% if request.user.is_authenticated %}
+                <div class="row">
+                        <div class="col-sm-5">
+                            <div class="bucket">
+                              <div class="voucher-input-form">
+                                  <form method='POST' action=''>{% csrf_token %}
+                                    <font color="#2e6da4" size="5">{{title}}</font><br><br>
+
+                                      <!-- <div class="custom-title">{{title}}</div><br><br> -->
+                                      <div class="bucketinner">
+                                          <div class="custom-form-main">
+
+                                              {% if perms.items.add_server %}
+                                                  <div class="vouchermessage>"You can only view voucher information.<br><br>
+                                                  Click cancel to go back.</div>
+                                              {% endif %}
+                                              
+                                              {% if perms.items.add_generator and not perms.items.add_server %}
+                                                  {{form|crispy}}<br><br>
+                                                  Received By: {{username}}<br><br>
+                                                  <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+                                              {% endif %}
+
+                                              <!-- BANK TRANSFER -->
+                                              {% if perms.items.add_banktransfer and not perms.items.add_server %}
+                                                  {% if is_generated == True and payment_method == "Bank Transfer" %}
+                                                      {{form|crispy}}<br><br>
+                                                      Received By: {{username}}<br><br>
+                                                      <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+                                                  {% elif is_generated == True and payment_method == "Cheque" %}
+                                                        <div class="vouchermessage">You cannot receive this voucher.<br><br>This voucher is set to be received by Cheque Printing during generation.<br><br></div>
+
+                                                  {% else %}<div class="vouchermessage">This Voucher is not yet generated.<br><br>
+                                                            Form will appear when the voucher is generated.</div>
+
+                                                  {% endif %}
+
+                                              {% endif %}
+
+                                              <!-- CPO -->
+                                              {% if perms.items.add_cpo and not perms.items.add_server %}
+                                                  {% if is_generated == True and payment_method == "Cheque" %}
+                                                      {{form|crispy}}<br><br>
+                                                      Received By: {{username}}<br><br>
+                                                      <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+                                                  {% elif is_generated == True and payment_method == "Bank Transfer" %}
+                                                      <div class="vouchermessage">You cannot receive this voucher.<br><br>This voucher is set to be received by Bank Transfer during generation.<br><br></div>
+
+                                                  {% else %}<div class="vouchermessage">This Voucher is not yet generated.<br><br>
+                                                            Form will appear when the voucher is generated.</div>
+
+                                                  {% endif %}
+
+                                              {% endif %}
+
+                                              <!-- CAGE1 -->
+                                              {% if perms.items.add_cage1 and not perms.items.add_server %}
+                                                  {% if is_received_by_CPO == True and payment_type == "Employee (Cage1)" %}
+                                                    {{form|crispy}}<br><br>
+                                                    Received By: {{username}}<br><br>
+                                                    <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+                                                  
+                                                  {% elif is_received_by_CPO == True and payment_type == "Vendor (Cage2)" %}
+                                                    <div class="vouchermessage">You cannot receive this voucher.<br><br>This voucher is set to be received by cage2.<br><br></div>
+
+                                                  {% else %}<div class="vouchermessage">This Voucher is not yet processed by Check Printing.<br><br>
+                                                            Form will appear when Check Printing mark this voucher as received.</div>
+
+                                                  {% endif %}
+
+                                              {% endif %}
+
+                                              <!-- CAGE2 -->
+                                              {% if perms.items.add_cage2 and not perms.items.add_server %}
+                                                  {% if is_received_by_CPO == True and payment_type == "Vendor (Cage2)" %}
+                                                    {{form|crispy}}<br><br>
+                                                    Received By: {{username}}<br><br>
+                                                    <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+                                                  
+                                                  {% elif is_received_by_CPO == True and payment_type == "Employee (Cage1)" %}
+                                                    <div class="vouchermessage">You cannot receive this voucher.<br><br>This voucher is set to be received by cage1.<br><br></div>
+
+                                                  {% else %}<div class="vouchermessage">This Voucher is not yet processed by Check Printing.<br><br>
+                                                            Form will appear when Check Printing mark this voucher as received.</div>
+
+                                                  {% endif %}
+
+                                              {% endif %}
+
+                                              <!-- ACCOUNTING UNIT -->
+                                              {% if perms.items.add_voucheraccountingunit and not perms.items.add_server %}
+                                                  {% if is_received_by_banktransfer == True and is_third_party == "Yes" %}
+                                                      {{form|crispy}}<br><br>
+                                                      Received By: {{username}}<br><br>
+                                                      <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+
+                                                      {% else %}<div class="vouchermessage">This Voucher is not yet processed by Bank Transfer.<br><br>
+                                                                Form will appear when Bank Transfer mark this voucher as received and third party.</div><br><br>
+
+                                                  {% endif %}
+
+                                              {% endif %}
+
+                                              <!-- REVENUE -->
+                                              {% if perms.items.add_voucherrevenue and not perms.items.add_server %}
+                                                  {% if is_received_by_accounting_unit == True %}
+                                                    {{form|crispy}}<br><br>
+                                                    Received By: {{username}}<br><br>
+                                                    <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+                                                    {% else %}<div class='vouchermessage'>This Voucher is not yet processed by Accounting Unit.<br><br>
+                                                    Form will appear here when accounting unit already received the voucher</div><br><br>
+                                                  {% endif %}
+                                              {% endif %}
+
+                                              <!-- STORE -->
+                                              {% if perms.items.add_store and not perms.items.add_server %}
+                                                  {% if allowToReceive == "Yes" %}
+                                                      {{form|crispy}}<br><br>
+                                                      Received By: {{username}}<br><br>
+                                                      <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+                                                  {% endif %}
+
+                                                  <!-- for voucher collection from store -->
+                                                  {% if location == "Store" or "Collected" in location %}
+                                                      {{form|crispy}}<br><br>
+                                                      Received By: {{username}}<br><br>
+                                                      <input class='btn btn-process btn-success'  type='submit' value='Save'/>
+                                                  {% endif %}
+                                              {% endif %}
+
+                                              <!-- RETURN -->
+                                              {% if perms.items.add_voucherreturn and not perms.items.add_server %}
+                                                  {% if is_hold == True %}
+                                                    {{form|crispy}}<br><br>
+                                                    Received By: {{username}}<br><br>
+                                                    <input class='btn btn-process btn-danger'  type='submit' value='Save'/>
+                                                    {% else %}<div class="vouchermessage">This Voucher is not on hold.
+                                                              You can only return vouchers that are on hold.</div><br><br>
+                                                  {% endif %}
+                                              {% endif %}
+
+                                              
+
+                                              {% if perms.items.add_cage1 and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_cage1"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_cage2 and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_cage2"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_generator and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_generator"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_cpo and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_cpo"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_banktransfer and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_banktransfer"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_voucheraccountingunit and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_accountingunit"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_voucherrevenue and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_revenue"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_store and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_store"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_voucherreturn and not perms.items.add_server %}
+                                                <a href="/items/voucher/home_return"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% elif perms.items.add_server %}
+                                                <a href="/items/voucher/home"><input class='btn btn-success cancel-submit' value='Cancel'/></a><br><br>
+
+                                              {% endif%}
+                                        </div><!--END custom-form-main-->
+                                      </div><!--Bucket div ends-->
+                                  </form>
+                              </div><!--END voucher-input-form-->
+                            </div><!--END bucket-->
+                        </div> <!-- col 1-->
+                        <div class="col-sm-7 aligncenter">
+                          <!-- <img src="/static/img/retirement.png"> -->
+                            <div class="voucher-details">
+                                <div class="voucher-display">
+                                    <div class="voucher-details-top"><img src="{% static 'img/gmcoatofarms100.png' %}" alt=""></div>
+                                    <div class="voucher-details-bottom">
+                                        <div>
+                                          <b>REPUBLIC OF THE GAMBIA</b><br>
+                                          Ministry of Finance<br><br>
+                                          <b>PAYMENT VOUCHER DETAILS</b><br><br>
+                                        </div>
+
+                                        <div class="aligncenter">
+                                          <span class="mybold">Voucher Number:</span> <span class="highlight">{{voucher_number}}</span><br><br>
+                                          <span class="mybold">Payee Name:</span> {{payee_name}}<br><br>
+                                          <span class="mybold">BE:</span> {{BE}}<br><br>
+                                          <span class="mybold">Amount:</span> D{{amount}}<br><br>
+<!--                                           {% if is_generated == False %}
+                                            <span style="color: red; font-weight: bolder">Not Yet Generated</span><br>
+                                          {% endif %} -->
+                                        </div>
+
+                                    </div><!--End Voucher-details-bottom-->
+                                </div><!--voucher-display-->
+                            </div><!--voucher-details-->
+                        </div><!-- col 2 -->
+                </div> <!--jumboton row-->
+            {% else %}You have to login before you can access this page. Click <a href="/accounts/login">here</a> to Sign in
+         {% endif %}
+      </div> <!--jumbotron end-->
+
+    </div> <!-- /container -->
+    <a href="#" class="scrollToTop">Scroll To Top</a>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- <script src="../../dist/js/bootstrap.min.js"></script> -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+
+    <script src="{% static 'js/jquery-1.12.3.js' %}"></script>
+    <script src="{% static 'js/jqueryui/jquery-ui.js' %}"></script>
+    <script src="{% static 'js/pager/paging.js' %}"></script>
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'js/icheck/icheck.min.js' %}"></script>
+    <!-- <script src="{% static 'js/nanobar/nanobar.min.js' %}"></script> -->
+    <script src="{% static 'js/nprogress/nprogress.js' %}"></script>
+    <script src="{% static 'js/datetimepicker-master/build/jquery.datetimepicker.full.min.js' %}"></script>
+
+
+  </body>
+</html>

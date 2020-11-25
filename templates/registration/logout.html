@@ -1,0 +1,11 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+
+<!-- {% block title %}{% trans "Logged out" %}{% endblock %} -->
+
+{% block content %}
+
+<p><h2><font color="red">{% trans "GOOD BYE..." %}.</font></h2></p>
+<b><a href="/accounts/login">You can Log back in anytime</a></b>
+
+{% endblock %}

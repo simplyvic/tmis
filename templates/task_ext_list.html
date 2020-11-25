@@ -1,0 +1,161 @@
+{% load staticfiles %}
+{% include 'navbar.html' %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- <meta HTTP-EQUIV="refresh" CONTENT="5"> -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="icon" href="../../favicon.ico"> -->
+
+    <title>TMIS</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.structure.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.theme.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'js/datetimepicker-master/jquery.datetimepicker.css' %}">
+
+
+  </head>
+
+  <body>
+  <div class="maincontainer">
+    <div class="container">
+      {% if messages %}<!--message 000aaa-->
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+      {% endif %}<!--End message 000aaa-->
+      
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron">
+            <div class="row">
+
+                  {% if request.user.is_authenticated %}<!--If authenticated -->
+                      <div class="row retirement-table">
+                        <div class="inline-search">
+                          <form method='POST' action=''>{% csrf_token %}
+                            <div class="custom-title">{{heading}}</div><br/><br/>
+                               {{form|crispy}}
+                                <div class='submit'><input class='btn btn-success'  type='submit' value='Search'/></div>
+                          </form>
+                        </div>
+
+                      </div>
+                          {% if message %}}<!--000555-->
+                          <div class="voucher-list-message aligncenter mybold highlight center">{{ message }}</div><br><br>
+                          {% endif %}<!-- End 000555-->
+
+                          <font color="#2e6da4" align="center">
+                          {% if my_task_ext %}<!--if my_task tasks_list 000111 This will check if you have a pending task assigned in your name-->
+
+                                <table class='table'>
+                                    <thead>
+                                        <tr>
+                                            <th class='aligncenter'>#</th>
+                                            <th class='aligncenter'>ASSINGMENT</th>
+                                            <th class='aligncenter'>TASK TITLE</th>
+                                            <th class='aligncenter'>AUDIT PHASE #</th>
+                                            <th class='aligncenter'>ASSIGNED TO</th>
+                                            <th class='aligncenter'>ASSIGNED BY</th>
+                                            <th class='aligncenter'>DUE DATE</th>
+                                            <th class='aligncenter'>REQUESTED BY</th>
+                                            <th class='aligncenter'>DATE REQUEST</th>
+                                        </tr>
+                                    </thead>
+                                    {% for instance in my_task_ext %}<!--for loop of tasks_list 000777-->
+                                        <tr class="spaceUnder">
+                                            <td class='aligncenter'>{{forloop.counter}}</td>
+                                            <td class='aligncenter'>
+                                              <!-- <ul class="nav navbar-nav"> -->
+                                                <li class="dropdown">
+              
+                                                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{instance.assignment}}<span class="caret"></span>
+                                                  </a>
+                                                  <ul class="dropdown-menu">
+                                                    <li><a href='{{ instance.get_absolute_url_comment }}'>Comments</a></li>         
+                                                    <li><a href='{{ instance.get_absolute_url_extension }}'><span class={{highlight}}>
+                                                    Extend Time</span></a></li>
+                                                    <!-- <li><a href='{{ instance.get_absolute_url_extension }}'>Extend Time</a></li>        -->
+                                                  </ul>
+
+                                                  </a></li>
+                                                
+                                                </li>
+                                              <!-- </ul> -->
+                                            </td>
+                                            <td class='aligncenter'><a href='{{ instance.get_absolute_url_extension }}'>{{instance.task_name}}</a></td>
+                                            <td class='aligncenter'>{{instance.audit_phase}}</td>
+                                            <td class='aligncenter'>{{instance.assigned_to.all}}</td>
+                                            <td class='aligncenter'>{{instance.assigned_by}}</a></td>
+                                            <td class='aligncenter'>{{instance.due_date}}</a></td>
+                                            <td class='aligncenter'>{{instance.ext_by}}</td>
+                                            <td class='aligncenter'>{{instance.date_ext}}</td>
+                                        </tr><!-- <br> -->
+                                    {% endfor %}<!--End for loop of tasks_list 000777-->
+                                    {% else %}<!--Else of ifequal for tasks_list 000111-->
+                                </table>
+                                        
+                          
+                                  <div class="col-sm-4"></div>
+
+                                  <div class="col-sm-4 voucher-thumbnail-display thumbnail">
+                                    <span style="color: #e61c66"><strong>No pending requests</strong></span>
+                                  </div>
+
+                                  <div class="col-sm-4"></div>
+
+                          {% endif %}<!--End of my_task for tasks_list 000111-->
+                          </font>
+
+                      {% else %}You have to login before you can access this page. Click <a href="/accounts/login">here</a> to Sign in
+                  {% endif %}<!-- End If authenticated -->
+            </div> <!-- End row-->
+      </div> <!--jumbotron end-->
+
+
+    </div> <!-- /container -->
+  <!-- </div> -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- <script src="../../dist/js/bootstrap.min.js"></script> -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+
+    <script src="{% static 'js/jquery-1.12.3.js' %}"></script>
+    <script src="{% static 'js/jqueryui/jquery-ui.js' %}"></script>
+    <script src="{% static 'js/pager/paging.js' %}"></script>
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+
+    <!-- ichecker and Nprogress Bar -->
+    <link href="{% static 'js/icheck/skins/square/blue.css' %}" rel="stylesheet">
+    <link href="{% static 'js/nprogress/nprogress.css' %}" rel="stylesheet">
+    <script src="{% static 'js/icheck/icheck.min.js' %}"></script>
+    <script src="{% static 'js/nprogress/nprogress.js' %}"></script>
+    <script src="{% static 'js/datetimepicker-master/build/jquery.datetimepicker.full.min.js' %}"></script>
+
+<!--   </div> End container -->
+  </div>
+  </body>
+</html>

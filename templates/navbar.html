@@ -1,0 +1,133 @@
+    {% load staticfiles %}
+
+    <!-- Fixed navbar -->
+    <div class="navbar-all">
+      <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">TMIS</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class=""><a href="/">Home</a></li>
+              {% if request.user.is_authenticated %}
+
+
+              {% if perms.tmis.add_task %}<!-- xyz -->
+              <li class="dropdown">
+                
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Task Management
+                  {% if my_task_count %}
+                    <span class="task_indicator">
+                       {{my_task_count}}
+                    </span>
+                   {% endif%}
+
+                  <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  {% if perms.tmis.add_task %}
+                  <li><a href="/tmis/user_task_list">My Task</a></li>
+                  {% else %}
+                  {% endif%}
+
+                  {% if perms.tmis.add_all_task %}
+                  <li role='separator' class='divider'></li>
+                  <li><a href="/tmis/all_task_list/">All Task</a></li>
+                  {% else %}
+                  {% endif%}
+                  
+                  {% if perms.tmis.add_assignment %}
+                  <li role='separator' class='divider'></li>
+                  <li><a href="/tmis/user_task_entry/">Assign Task</a></li>
+                  {% else %}
+                  {% endif%}
+
+                </ul>
+              </li>
+              {% endif%}<!-- If if perms.tmis.add_task end xyz -->
+
+              {% endif %}<!--If request.user is authenticated end-->
+            </ul>
+
+            
+
+            <ul class="nav navbar-nav navbar-right">
+
+              {% if request.user.is_authenticated %}
+               <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user}} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="/accounts/login">Login as another account</font></a></li>
+                  <!-- <li role='separator' class='divider'></li> -->
+                  <!-- <li><a href="/admin/password_change">Change password</font></a></li> -->
+                </ul>
+              </li>
+
+              {% if request.user.is_authenticated %}
+              <li><a href="/accounts/logout"><font color="red" class="btn btn-danger">Logout</font></a></li>
+              {% else %}
+              <li><a href="/accounts/login"><font color="red">Login</font></a></li>
+              {% endif %}
+
+              <!-- <li class="active"><a href="#">About <span class="sr-only">(current)</span></a></li> -->
+              {% endif %}
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+    <!-- <a href="#"><div id="version-display">UIMS Ver: 1.0</div></a> -->
+    <a href="#"><div id="version-display" data-toggle="modal" data-target="#myModal">UMIS Ver: 1.0</div></a>
+    <div id="myModal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">System Information</h4>
+              </div>
+              <div class="modal-body">
+                <div class="dev-info">
+                  <p class=""><b>TASK MANAGEMENT INFORMATION SYSTEMS</b></p>
+                  <p>VERSION: 1.0</p><br>
+
+                  <!-- <p><img src="/static/img/sunusoftSmall.png" alt="Developer Logo"></a></p>                -->
+                  <p class="modal-header">DEVELOPER:</p>
+                  <p><a href="http://www.arbcoms.com" target="_blank">Arbcoms.com</a></p>
+                  <!-- <p>Accoutant General's Department</p> -->
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      {% if request.user.is_authenticated %}
+      <a href="/settings"> 
+        <div id="settings">
+              Settings <img src="/static/img/settings.png">
+        </div>
+      </a>
+      {% endif %}
+<!--     <div class="error" style="display: none;"></div>
+    <div class="success" style="display: none;"></div> -->
+
+<!--     <div class="status message">
+      <ul class="messages">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}><font size="4">{{ message }}</font></li>
+        {% endfor %}
+      </ul>
+    </div> --><!--status message end-->
+    
+<!--     <div id="error-dialog" style="display: none;"></div>
+    <div id="success-dialog" style="display: none;"></div> -->

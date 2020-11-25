@@ -1,0 +1,160 @@
+{% load staticfiles %}
+{% include 'navbar.html' %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="icon" href="../../favicon.ico"> -->
+
+    <title>TMIS</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/navbar-fixed-top.css' %}" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.structure.css' %}" rel="stylesheet">
+    <link href="{% static 'js/jqueryui/jquery-ui.theme.css' %}" rel="stylesheet">
+    <link href="{% static 'js/icheck/skins/square/blue.css' %}" rel="stylesheet">
+    <link href="{% static 'js/nprogress/nprogress.css' %}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'js/datetimepicker-master/jquery.datetimepicker.css' %}">
+
+
+    <!-- <link href="your-path/square/color-scheme.css" rel="stylesheet"> -->
+
+
+  </head>
+
+  <body>
+  <div class="maincontainer">
+    <div class="container">
+      {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li> {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+      {% endif %}
+
+      <!-- Main component for a primary marketing message or call to action -->
+     <div id="nanobar"></div>
+      <div class="jumbotron">
+        <div class="row">
+          <div class="col-sm-5">
+            
+          </div> <!--jumboton col 1-->
+          {% for instance in queryset %}
+          {% if request.user.is_authenticated %}
+                <div class="col-sm-12 aligncenter gratuity-image">
+                      <div class="col-sm-12">
+                          <div class="row">
+                              <div class="col-sm-3">
+                                    <div class="{{profile_img_class}}"><img src='{{instance.image.url}}' class='img-responsive' >
+                                      {% if instance.completed %}
+                                      <br><span style="color: white; font-weight: bolder; font-size: 30px;">Task</span><br>
+                                      {% else %}<br><span style="color: white; font-weight: bolder; font-size: 30px;">DUE IN</span><br><hr>
+                                      {% endif %}
+
+                                      {% if instance.completed %}
+                                      <span style="color: white; font-weight: bolder; font-size: 25px;">Ended on:<br />{{instance.date_completed}}</span><p></p>
+                                      {% else %}
+                                          <span class="blink-me" style="color: white; font-weight: bolder; font-size: 25px;">{{ instance.due_date|timeuntil:today }}</span><p></p>
+                                      {% endif %}
+                                      
+                                      <!-- <span class="" style="color: white; font-weight: bolder;">{{ instance.due_date}}</span> -->
+                                    </div>
+                              </div><!--Image-display-->
+                              
+                              <div class="col-sm-9 title_box thumbnail">
+                                      <div>
+                                        <br><b>{{instance.assignment}}</b><br>{{instance.task_name}}<br>
+                                      </div>
+                              </div>
+
+                              <div class="col-sm-2 profile_detail">
+                                      <div>
+                                        <br><b>Assigned By:</b><br>{{instance.assigned_by}}<br>
+                                      </div>
+                              </div>
+                              <div class="col-sm-2 profile_detail">
+                                      <div>
+                                        <br><b>Assigned Date:</b><br>{{instance.date_assigned}}<br>
+                                      </div>
+                              </div>
+                              <div class="col-sm-2 profile_detail">
+                                      <div>
+                                        <br><b>Status:</b><br>{{instance.status}}<br>
+                                        {% if instance.sub_rev %}
+                                        {{ instance.date_sub_rev|timesince }}
+                                        {% endif %}
+                                      </div>
+                              </div>
+                              <div class="col-sm-2 profile_detail">
+                                      <div>
+                                        <br><b>Time Extension:</b><br>
+                                        {% if instance.due_date >= instance.original_due_date %}
+                                          <span style="color: #000;">
+                                            Overdue: 
+                                            {% if instance.completed %}
+        <!--Not working as expected-->      {{ instance.original_due_date|timeuntil:instance.date_completed }}
+                                            {% else %}
+                                            {{ instance.original_due_date|timesince }}
+                                            {% endif %}
+                                          </span>
+                                        {% endif %}
+                                        <br>
+                                      </div>
+                              </div>
+
+                          </div><!--End Row 1-->
+                      </div><!--END col-sm-12"-->
+
+                      <div class="col-sm-12"><!-- 000111-->
+                          <div class="row">
+                              <form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
+                                  <div class="{{disable_classs}} bucketinner">
+                                    {{form|crispy}}
+                                    <input class='btn btn-process btn-danger save'  type='submit' value='Submit'/>
+                                    <a href="/tmis/user_task_list"><input class='btn btn-primary cancel-submit' value='Cancel'/></a><br><br>
+                                  </div>
+                              </form>
+                          </div>
+                      </div><!--END col-sm-12 000111"-->
+                    </div><!--  jumboton col 2 of jumbotron col 2 -->
+          {% endif %}
+          {% endfor %}
+        </div> <!--jumboton row-->
+      </div> <!--jumbotron end-->
+
+    </div> <!-- /container -->
+    <a href="#" class="scrollToTop">Scroll To Top</a>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+    <script src="{% static 'js/jquery-1.12.3.js' %}"></script>
+    <script src="{% static 'js/jqueryui/jquery-ui.js' %}"></script>
+    <script src="{% static 'js/pager/paging.js' %}"></script>
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'js/icheck/icheck.min.js' %}"></script>
+    <script src="{% static 'js/nprogress/nprogress.js' %}"></script>
+    <script src="{% static 'js/datetimepicker-master/build/jquery.datetimepicker.full.min.js' %}"></script>
+
+  </body>
+</html>

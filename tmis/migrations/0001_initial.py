@@ -1,0 +1,117 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+from django.conf import settings
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Assignment',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('assignment_name', models.CharField(max_length=500, null=True, blank=True)),
+                ('supervisor', models.CharField(max_length=500, null=True, blank=True)),
+                ('sdp_link', models.CharField(max_length=500, null=True, blank=True)),
+                ('lead', models.CharField(max_length=500, null=True, blank=True)),
+                ('team', models.CharField(max_length=500, null=True, blank=True)),
+                ('plan_start_date', models.DateField(null=True, blank=True)),
+                ('plan_due_date', models.DateField(null=True, blank=True)),
+                ('started', models.BooleanField(default=False)),
+                ('date_started', models.DateField(null=True, blank=True)),
+                ('completed', models.BooleanField(default=False)),
+                ('date_completed', models.DateField(null=True, blank=True)),
+                ('annual_plan', models.BooleanField(default=False, verbose_name=b'Annual plan activity')),
+                ('comment', models.TextField(default=b'', max_length=300000, null=True, blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Search',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('task_name', models.CharField(max_length=500, null=True, verbose_name=b'Task', blank=True)),
+                ('due_on', models.DateField(null=True, verbose_name=b'Due on or before', blank=True)),
+                ('assigned_by', models.OneToOneField(related_name='UserModel', null=True, blank=True, to=settings.AUTH_USER_MODEL)),
+                ('assigned_to', models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL)),
+                ('assignment', models.ForeignKey(blank=True, to='tmis.Assignment', null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Task',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('task_name', models.CharField(max_length=500, null=True, verbose_name=b'Task', blank=True)),
+                ('assigned_by', models.CharField(max_length=30, null=True, blank=True)),
+                ('date_assigned', models.DateField(null=True, blank=True)),
+                ('status', models.CharField(max_length=30, null=True, blank=True)),
+                ('completed', models.BooleanField(default=False, verbose_name=b'Task Completed')),
+                ('date_completed', models.DateField(null=True, blank=True)),
+                ('ext', models.BooleanField(default=False, verbose_name=b'Request for time extension')),
+                ('ext_by', models.CharField(max_length=30, null=True, verbose_name=b'Requested by', blank=True)),
+                ('date_ext', models.DateField(null=True, blank=True)),
+                ('aprv_ext', models.BooleanField(default=False, verbose_name=b'Approve time extension')),
+                ('date_apprv_ext', models.DateField(null=True, blank=True)),
+                ('disaprv_ext', models.BooleanField(default=False, verbose_name=b'Disapprove time extension')),
+                ('date_disapprv_ext', models.DateField(null=True, blank=True)),
+                ('sub_rev', models.BooleanField(default=False, verbose_name=b'Submit for review / Action')),
+                ('review_due_date', models.DateField(null=True, verbose_name=b'Review / Action due date', blank=True)),
+                ('sub_by', models.CharField(max_length=30, null=True, verbose_name=b'Submitted by', blank=True)),
+                ('rev_level', models.CharField(blank=True, max_length=30, null=True, verbose_name=b'Level of review / Action', choices=[(b'First Level Review', b'First Level Review'), (b'Second Level Review', b'Second Level Review'), (b'Third Level Review', b'Third Level Review'), (b'Completion Review', b'Completion Review'), (b'Action', b'Action')])),
+                ('first_level_reviewer', models.CharField(max_length=30, null=True, blank=True)),
+                ('second_level_reviewer', models.CharField(max_length=30, null=True, blank=True)),
+                ('third_level_reviewer', models.CharField(max_length=30, null=True, blank=True)),
+                ('completion_reviewer', models.CharField(max_length=30, null=True, blank=True)),
+                ('action_reviewer', models.CharField(max_length=30, null=True, blank=True)),
+                ('date_sub_rev', models.DateField(null=True, blank=True)),
+                ('first_level_review_rev_date', models.DateField(null=True, blank=True)),
+                ('first_level_review_sent_date', models.DateField(null=True, blank=True)),
+                ('second_level_review_rev_date', models.DateField(null=True, blank=True)),
+                ('second_level_review_sent_date', models.DateField(null=True, blank=True)),
+                ('third_level_review_rev_date', models.DateField(null=True, blank=True)),
+                ('third_level_review_sent_date', models.DateField(null=True, blank=True)),
+                ('completion_review_rev_date', models.DateField(null=True, blank=True)),
+                ('completion_review_sent_date', models.DateField(null=True, blank=True)),
+                ('action_review_rev_date', models.DateField(null=True, blank=True)),
+                ('action_review_sent_date', models.DateField(null=True, blank=True)),
+                ('reviewed', models.BooleanField(default=False, verbose_name=b'Reviewed / Action completed')),
+                ('date_rev', models.DateField(null=True, blank=True)),
+                ('start_date', models.DateField(null=True, blank=True)),
+                ('due_date', models.DateField(null=True, blank=True)),
+                ('original_due_date', models.DateField(null=True, blank=True)),
+                ('working_paper', models.FileField(null=True, upload_to=b'', blank=True)),
+                ('uploaded_at', models.DateTimeField(auto_now_add=True, null=True)),
+                ('add_comment', models.CharField(max_length=500, null=True, blank=True)),
+                ('conversation', models.TextField(default=b'', max_length=300000, null=True, verbose_name=b'Conversation', blank=True)),
+                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ('assigned_to', models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
+                ('assignment', models.ForeignKey(blank=True, to='tmis.Assignment', null=True)),
+                ('reviewer', models.ForeignKey(related_name='User', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='TaskAudit',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('task_name', models.CharField(max_length=30, null=True, blank=True)),
+                ('assigned_by', models.CharField(max_length=30, null=True, blank=True)),
+                ('date_assigned', models.DateTimeField(null=True, blank=True)),
+                ('accept_task', models.BooleanField(default=False)),
+                ('accepted_by', models.CharField(max_length=30, null=True, blank=True)),
+                ('date_accepted', models.DateTimeField(null=True, blank=True)),
+                ('status', models.CharField(max_length=30, null=True, blank=True)),
+                ('completed', models.BooleanField(default=False, verbose_name=b'Task Completed')),
+                ('date_completed', models.DateTimeField(null=True, blank=True)),
+                ('start_date', models.DateTimeField(null=True, blank=True)),
+                ('due_date', models.DateField(null=True, blank=True)),
+                ('comment', models.TextField(default=b'', max_length=300000, null=True, verbose_name=b'comments', blank=True)),
+                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ('assigned_to', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+    ]
